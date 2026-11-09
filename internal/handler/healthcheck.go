@@ -24,6 +24,13 @@ func NewHealthCheck(svc service.HealthCheck) HealthCheck {
 	}
 }
 
+// @Summary Check the health of the service
+// @Description Returns the health status of the service
+// @Tags heatlh-check
+// @Produce application/json
+// @Success 200 {object} service.HealthResponse
+// @Failure 500 {object} string "Internal Server Error"
+// @Router /health [get]
 // Check writes the service health status as a JSON response.
 func (h *healthCheck) Check(c *gin.Context) {
 	result := h.svc.Check()

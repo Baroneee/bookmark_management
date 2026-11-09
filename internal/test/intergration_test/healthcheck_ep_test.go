@@ -42,7 +42,9 @@ func TestHealthCheckEndpoint(t *testing.T) {
 			testAPIEngine := api.NewEngine(&api.Config{
 				ServiceName: "bookmark-service",
 				InstanceID:  "test-instance-id",
-			})
+			},
+				nil,
+			)
 			rec, req := tc.setupTestRequest()
 			testAPIEngine.ServerHTTP(rec, req)
 

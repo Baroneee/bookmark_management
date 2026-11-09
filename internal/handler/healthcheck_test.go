@@ -8,7 +8,7 @@ import (
 	"testing"
 
 	"github.com/Baroneee/EBVN_Assignment_1/internal/service"
-	healthcheck_svc_mocks "github.com/Baroneee/EBVN_Assignment_1/internal/service/mocks"
+	svc_mocks "github.com/Baroneee/EBVN_Assignment_1/internal/service/mocks"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/assert/v2"
 )
@@ -19,14 +19,14 @@ func TestHealthCheck(t *testing.T) {
 
 	testCases := []struct {
 		name             string
-		setupMockService func(ctx context.Context) *healthcheck_svc_mocks.HealthCheck
+		setupMockService func(ctx context.Context) *svc_mocks.HealthCheck
 		expectedCode     int
 		expectedBody     service.HealthResponse
 	}{
 		{
 			name: "Case 1: Handler successfully returns health check data from service",
-			setupMockService: func(ctx context.Context) *healthcheck_svc_mocks.HealthCheck {
-				mockSvc := &healthcheck_svc_mocks.HealthCheck{}
+			setupMockService: func(ctx context.Context) *svc_mocks.HealthCheck {
+				mockSvc := &svc_mocks.HealthCheck{}
 				mockSvc.On("Check").Return(service.HealthResponse{
 					Message:     "OK",
 					ServiceName: "bookmark-service",

@@ -4,8 +4,9 @@ import (
 	"uuid"
 )
 
-//go:generate mockery --name=HealthCheck --filename=healthcheck.go --outpkg healthcheck_svc_mocks
 // HealthResponse contains the health status returned by the service.
+//
+//go:generate mockery --name=HealthCheck --filename=healthcheck.go --outpkg svc_mocks
 type HealthResponse struct {
 	Message     string `json:"message"`
 	ServiceName string `json:"service_name"`
