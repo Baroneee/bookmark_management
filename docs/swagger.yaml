@@ -1,0 +1,63 @@
+definitions:
+  handler.shortenLinkInput:
+    properties:
+      url:
+        type: string
+    type: object
+  service.HealthResponse:
+    properties:
+      instance_id:
+        type: string
+      message:
+        type: string
+      service_name:
+        type: string
+    type: object
+info:
+  contact: {}
+  description: This is a simple bookmark management API.
+  title: Bookmark Management API
+  version: 1.0.0
+paths:
+  /health:
+    get:
+      description: Returns the health status of the service
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/service.HealthResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Check the health of the service
+      tags:
+      - heatlh-check
+  /v1/links/shortern:
+    post:
+      consumes:
+      - application/json
+      description: Generate shortern link
+      parameters:
+      - description: Input required
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/handler.shortenLinkInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Generate shortern link
+      tags:
+      - link
+swagger: "2.0"
