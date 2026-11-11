@@ -3,6 +3,7 @@ package service
 import (
 	"testing"
 
+	redisPkg "github.com/Baroneee/EBVN_Assignment_1/pkg/redis"
 	"github.com/go-playground/assert/v2"
 )
 
@@ -39,9 +40,10 @@ func TestHealthCheck(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			svc := NewHealthCheck(tc.serviceName, tc.instanceID)
-			result := svc.Check()
+			svc := NewHealthCheck(tc.serviceName, tc.instanceID, redisPkg.InitMockRedis(t))
+			result, err := svc.Check()
 
+			assert.Equal(t, nil, err)
 			assert.Equal(t, tc.expectedMsg, result.Message)
 			assert.Equal(t, tc.expectedName, result.ServiceName)
 			if tc.checkEmptyID {

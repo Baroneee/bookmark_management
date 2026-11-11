@@ -5,6 +5,7 @@ import (
 	"crypto/rand"
 	"errors"
 	"math/big"
+	"time"
 
 	"github.com/Baroneee/EBVN_Assignment_1/internal/repository"
 )
@@ -15,10 +16,11 @@ const maxCodeGenerationAttempts = 10
 
 var errCodeGenerationAttemptsExceeded = errors.New("unable to generate a unique short URL code")
 
-//go:generate mockery --name=ShortenURL --filename=shorternurl.go --outpkg svc_mocks
 // ShortenURL creates and stores shortened URL codes.
+//
+//go:generate mockery --name=ShortenURL --filename=shorternurl.go --outpkg svc_mocks
 type ShortenURL interface {
-	CreateShorternLink(ctx context.Context, url string) (string, error)
+	CreateShorternLink(ctx context.Context, url string, expireTime time.Duration) (string, error)
 }
 
 type shortenURL struct {
@@ -32,14 +34,14 @@ func NewShortenURL(r repository.URLStorage) ShortenURL {
 
 // CreateShorternLink generates a random code, stores the URL under that code,
 // and returns the generated code.
-func (s *shortenURL) CreateShorternLink(ctx context.Context, url string) (string, error) {
+func (s *shortenURL) CreateShorternLink(ctx context.Context, url string, expireTime time.Duration) (string, error) {
 	for attempt := 0; attempt < maxCodeGenerationAttempts; attempt++ {
 		code, err := generateCode()
 		if err != nil {
 			return "", err
 		}
 
-		created, err := s.r.StoreURLIfAbsent(ctx, code, url)
+		created, err := s.r.StoreURLIfAbsent(ctx, code, url, expireTime)
 		if err != nil {
 			return "", err
 		}

@@ -53,6 +53,7 @@ func (e *engine) initRoutes() {
 	healthCheckSvc := service.NewHealthCheck(
 		e.cfg.ServiceName,
 		e.cfg.InstanceID,
+		e.redisClient,
 	)
 
 	urlStorageRepo := repository.NewURLStorage(e.redisClient)

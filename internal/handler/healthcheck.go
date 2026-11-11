@@ -33,6 +33,10 @@ func NewHealthCheck(svc service.HealthCheck) HealthCheck {
 // @Router /health [get]
 // Check writes the service health status as a JSON response.
 func (h *healthCheck) Check(c *gin.Context) {
-	result := h.svc.Check()
+	result, err := h.svc.Check()
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
+		return
+	}
 	c.JSON(http.StatusOK, result)
 }

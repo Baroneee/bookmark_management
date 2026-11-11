@@ -8,6 +8,7 @@ import (
 
 	"github.com/Baroneee/EBVN_Assignment_1/internal/api"
 	"github.com/Baroneee/EBVN_Assignment_1/internal/service"
+	redisPkg "github.com/Baroneee/EBVN_Assignment_1/pkg/redis"
 	"github.com/go-playground/assert/v2"
 )
 
@@ -37,13 +38,14 @@ func TestHealthCheckEndpoint(t *testing.T) {
 		},
 	}
 	for _, tc := range testCases {
+		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 			testAPIEngine := api.NewEngine(&api.Config{
 				ServiceName: "bookmark-service",
 				InstanceID:  "test-instance-id",
 			},
-				nil,
+				redisPkg.InitMockRedis(t),
 			)
 			rec, req := tc.setupTestRequest()
 			testAPIEngine.ServerHTTP(rec, req)

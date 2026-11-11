@@ -4,6 +4,7 @@ package svc_mocks
 
 import (
 	context "context"
+	time "time"
 
 	mock "github.com/stretchr/testify/mock"
 )
@@ -14,8 +15,8 @@ type ShortenURL struct {
 }
 
 // CreateShorternLink provides a mock function with given fields: ctx, url
-func (_m *ShortenURL) CreateShorternLink(ctx context.Context, url string) (string, error) {
-	ret := _m.Called(ctx, url)
+func (_m *ShortenURL) CreateShorternLink(ctx context.Context, url string, expireTime time.Duration) (string, error) {
+	ret := _m.Called(ctx, url, expireTime)
 
 	if len(ret) == 0 {
 		panic("no return value specified for CreateShorternLink")
@@ -23,17 +24,17 @@ func (_m *ShortenURL) CreateShorternLink(ctx context.Context, url string) (strin
 
 	var r0 string
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, string) (string, error)); ok {
-		return rf(ctx, url)
+	if rf, ok := ret.Get(0).(func(context.Context, string, time.Duration) (string, error)); ok {
+		return rf(ctx, url, expireTime)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, string) string); ok {
-		r0 = rf(ctx, url)
+	if rf, ok := ret.Get(0).(func(context.Context, string, time.Duration) string); ok {
+		r0 = rf(ctx, url, expireTime)
 	} else {
 		r0 = ret.Get(0).(string)
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, string) error); ok {
-		r1 = rf(ctx, url)
+	if rf, ok := ret.Get(1).(func(context.Context, string, time.Duration) error); ok {
+		r1 = rf(ctx, url, expireTime)
 	} else {
 		r1 = ret.Error(1)
 	}
