@@ -1,6 +1,8 @@
 definitions:
   handler.shortenLinkInput:
     properties:
+      exp:
+        type: integer
       url:
         type: string
     type: object

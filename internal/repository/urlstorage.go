@@ -12,7 +12,7 @@ const expTime = 1 * time.Hour
 // URLStorage stores and retrieves URLs by their shortened keys.
 type URLStorage interface {
 	StoreURL(ctx context.Context, key, url string) error
-	StoreURLIfAbsent(ctx context.Context, key, url string) (bool, error)
+	StoreURLIfAbsent(ctx context.Context, key, url string, expireTime time.Duration) (bool, error)
 	GetURL(ctx context.Context, key string) (string, error)
 }
 
@@ -31,8 +31,11 @@ func (s *urlStorage) StoreURL(ctx context.Context, key, url string) error {
 }
 
 // StoreURLIfAbsent stores a URL only when key does not already exist.
-func (s *urlStorage) StoreURLIfAbsent(ctx context.Context, key, url string) (bool, error) {
-	return s.c.SetNX(ctx, key, url, expTime).Result()
+func (s *urlStorage) StoreURLIfAbsent(ctx context.Context, key, url string, expireTime time.Duration) (bool, error) {
+	if expireTime <= 0 {
+		expireTime = expTime
+	}
+	return s.c.SetNX(ctx, key, url, expireTime).Result()
 }
 
 // GetURL retrieves the URL stored under key.

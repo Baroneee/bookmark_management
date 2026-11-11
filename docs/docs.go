@@ -84,6 +84,9 @@ const docTemplate = `{
         "handler.shortenLinkInput": {
             "type": "object",
             "properties": {
+                "exp": {
+                    "type": "integer"
+                },
                 "url": {
                     "type": "string"
                 }

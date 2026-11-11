@@ -2,6 +2,7 @@ package handler
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/Baroneee/EBVN_Assignment_1/internal/service"
 	"github.com/gin-gonic/gin"
@@ -23,7 +24,8 @@ func NewShortenURL(svc service.ShortenURL) ShortenLink {
 
 // shortenLinkInput contains the URL submitted for shortening.
 type shortenLinkInput struct {
-	URL string `json:"url"`
+	URL        string `json:"url"`
+	ExpireTime int    `json:"expireTime"`
 }
 
 // @Summary Generate shortern link
@@ -42,8 +44,12 @@ func (h *shortenURL) CreateShorternLink(c *gin.Context) {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Invalid Input"})
 		return
 	}
+	if input.ExpireTime < 0 {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Invalid Input"})
+		return
+	}
 
-	code, err := h.svc.CreateShorternLink(c, input.URL)
+	code, err := h.svc.CreateShorternLink(c, input.URL, time.Duration(input.ExpireTime)*time.Second)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
 		return

@@ -2,6 +2,7 @@ package urlstorage_repo_mocks
 
 import (
 	"context"
+	"time"
 
 	repository "github.com/Baroneee/EBVN_Assignment_1/internal/repository"
 	"github.com/stretchr/testify/mock"
@@ -18,8 +19,8 @@ func (m *URLStorage) StoreURL(ctx context.Context, key, url string) error {
 }
 
 // StoreURLIfAbsent calls the configured mock expectation.
-func (m *URLStorage) StoreURLIfAbsent(ctx context.Context, key, url string) (bool, error) {
-	args := m.Called(ctx, key, url)
+func (m *URLStorage) StoreURLIfAbsent(ctx context.Context, key, url string, expireTime time.Duration) (bool, error) {
+	args := m.Called(ctx, key, url, expireTime)
 	return args.Bool(0), args.Error(1)
 }
 

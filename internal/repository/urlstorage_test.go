@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"testing"
+	"time"
 
 	redisPkg "github.com/Baroneee/EBVN_Assignment_1/pkg/redis"
 	"github.com/redis/go-redis/v9"
@@ -82,11 +83,11 @@ func TestURLStorage_StoreURLIfAbsent(t *testing.T) {
 			mock := tc.setupMock(ctx)
 			testRepo := NewURLStorage(mock)
 
-			created, err := testRepo.StoreURLIfAbsent(ctx, "abcxyz", "google.com")
+			created, err := testRepo.StoreURLIfAbsent(ctx, "abcxyz", "google.com", time.Hour)
 			assert.NoError(t, err)
 			assert.True(t, created)
 
-			created, err = testRepo.StoreURLIfAbsent(ctx, "abcxyz", "example.com")
+			created, err = testRepo.StoreURLIfAbsent(ctx, "abcxyz", "example.com", time.Hour)
 			assert.ErrorIs(t, err, tc.expectedErr)
 			assert.False(t, created)
 

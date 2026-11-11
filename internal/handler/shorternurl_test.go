@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	svc_mocks "github.com/Baroneee/EBVN_Assignment_1/internal/service/mocks"
 	"github.com/gin-gonic/gin"
@@ -26,9 +27,9 @@ func TestShortenURL_CreateShorternLink(t *testing.T) {
 	}{
 		{
 			name: "success",
-			body: `{"url":"https://example.com"}`,
+			body: `{"url":"https://example.com","expireTime":7200}`,
 			setupMockService: func(mockSvc *svc_mocks.ShortenURL) {
-				mockSvc.On("CreateShorternLink", mock.Anything, "https://example.com").
+				mockSvc.On("CreateShorternLink", mock.Anything, "https://example.com", 2*time.Hour).
 					Return("abc1234", nil)
 			},
 			expectedCode: http.StatusOK,
@@ -47,7 +48,7 @@ func TestShortenURL_CreateShorternLink(t *testing.T) {
 			name: "service error",
 			body: `{"url":"https://example.com"}`,
 			setupMockService: func(mockSvc *svc_mocks.ShortenURL) {
-				mockSvc.On("CreateShorternLink", mock.Anything, "https://example.com").
+				mockSvc.On("CreateShorternLink", mock.Anything, "https://example.com", time.Duration(0)).
 					Return("", assert.AnError)
 			},
 			expectedCode: http.StatusInternalServerError,
@@ -56,6 +57,7 @@ func TestShortenURL_CreateShorternLink(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
+		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 			rec := httptest.NewRecorder()

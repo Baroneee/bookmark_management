@@ -31,7 +31,7 @@ func TestHealthCheck(t *testing.T) {
 					Message:     "OK",
 					ServiceName: "bookmark-service",
 					InstanceID:  "mock-uuid-123",
-				})
+				}, nil)
 				return mockSvc
 			},
 			expectedCode: http.StatusOK,

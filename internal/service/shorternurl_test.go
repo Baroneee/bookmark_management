@@ -2,6 +2,7 @@ package service
 
 import (
 	"testing"
+	"time"
 
 	repository_mocks "github.com/Baroneee/EBVN_Assignment_1/internal/repository/mocks"
 	"github.com/stretchr/testify/assert"
@@ -23,7 +24,7 @@ func TestShortenURL_CreateShorternLink(t *testing.T) {
 		{
 			name: "success",
 			setupMockStorage: func(mockStorage *repository_mocks.URLStorage) {
-				mockStorage.On("StoreURLIfAbsent", mock.Anything, mock.Anything, "https://example.com").
+				mockStorage.On("StoreURLIfAbsent", mock.Anything, mock.Anything, "https://example.com", time.Hour).
 					Return(true, nil).Once()
 			},
 			verifyCode:    true,
@@ -32,9 +33,9 @@ func TestShortenURL_CreateShorternLink(t *testing.T) {
 		{
 			name: "retry after collision",
 			setupMockStorage: func(mockStorage *repository_mocks.URLStorage) {
-				mockStorage.On("StoreURLIfAbsent", mock.Anything, mock.Anything, "https://example.com").
+				mockStorage.On("StoreURLIfAbsent", mock.Anything, mock.Anything, "https://example.com", time.Hour).
 					Return(false, nil).Once()
-				mockStorage.On("StoreURLIfAbsent", mock.Anything, mock.Anything, "https://example.com").
+				mockStorage.On("StoreURLIfAbsent", mock.Anything, mock.Anything, "https://example.com", time.Hour).
 					Return(true, nil).Once()
 			},
 			verifyCode:    true,
@@ -43,7 +44,7 @@ func TestShortenURL_CreateShorternLink(t *testing.T) {
 		{
 			name: "storage error",
 			setupMockStorage: func(mockStorage *repository_mocks.URLStorage) {
-				mockStorage.On("StoreURLIfAbsent", mock.Anything, mock.Anything, "https://example.com").
+				mockStorage.On("StoreURLIfAbsent", mock.Anything, mock.Anything, "https://example.com", time.Hour).
 					Return(false, assert.AnError).Once()
 			},
 			expectedError: assert.AnError,
@@ -59,7 +60,7 @@ func TestShortenURL_CreateShorternLink(t *testing.T) {
 			tc.setupMockStorage(mockStorage)
 			shortenSvc := NewShortenURL(mockStorage)
 
-			code, err := shortenSvc.CreateShorternLink(ctx, "https://example.com")
+			code, err := shortenSvc.CreateShorternLink(ctx, "https://example.com", time.Hour)
 
 			assert.ErrorIs(t, err, tc.expectedError)
 			if tc.verifyCode {
