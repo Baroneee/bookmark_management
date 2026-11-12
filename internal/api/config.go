@@ -5,7 +5,7 @@ import "github.com/kelseyhightower/envconfig"
 // Config contains application settings loaded from environment variables.
 type Config struct {
 	ServiceName string `envconfig:"APP_NAME" default:"bookmark-service"`
-	AppPort     int    `envconfig:"APP_PORT" default:"8080"`
+	AppPort     int    `envconfig:"APP_PORT" default:"8081"`
 	InstanceID  string `envconfig:"INSTANCE_ID" default:""`
 }
 

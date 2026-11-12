@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"github.com/redis/go-redis/v9"
@@ -37,11 +38,14 @@ func (s *urlStorage) StoreURLIfAbsent(ctx context.Context, key, url string, expi
 	}
 	return s.c.SetNX(ctx, key, url, expireTime).Result()
 }
-
+var ErrUrlDoesNotExist = errors.New("url does not exist")
 // GetURL retrieves the URL stored under key.
 func (s *urlStorage) GetURL(ctx context.Context, key string) (string, error) {
 	url, err := s.c.Get(ctx, key).Result()
 	if err != nil {
+		if errors.Is(err, redis.Nil) {
+			return "", ErrUrlDoesNotExist
+		}
 		return "", err
 	}
 	return url, nil

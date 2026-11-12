@@ -21,6 +21,7 @@ var errCodeGenerationAttemptsExceeded = errors.New("unable to generate a unique 
 //go:generate mockery --name=ShortenURL --filename=shorternurl.go --outpkg svc_mocks
 type ShortenURL interface {
 	CreateShorternLink(ctx context.Context, url string, expireTime time.Duration) (string, error)
+	GetUrlFromCode(ctx context.Context, code string) (string, error)
 }
 
 type shortenURL struct {
@@ -63,4 +64,17 @@ func generateCode() (string, error) {
 		code[i] = charset[n.Int64()]
 	}
 	return string(code), nil
+}
+
+var ErrUrlDoesNotExist = errors.New("url does not exist")
+
+func (s *shortenURL) GetUrlFromCode(ctx context.Context, code string) (string, error) {
+	res, err := s.r.GetURL(ctx, code)
+	if err != nil {
+		if errors.Is(err, repository.ErrUrlDoesNotExist) {
+			return "", ErrUrlDoesNotExist
+		}
+		return "", err
+	}
+	return res, nil
 }

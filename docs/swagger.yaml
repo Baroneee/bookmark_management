@@ -1,10 +1,14 @@
 definitions:
   handler.shortenLinkInput:
     properties:
-      exp:
+      expireTime:
+        maximum: 604800
+        minimum: 0
         type: integer
       url:
         type: string
+    required:
+    - url
     type: object
   service.HealthResponse:
     properties:
@@ -38,6 +42,23 @@ paths:
       summary: Check the health of the service
       tags:
       - heatlh-check
+  /v1/links/redirect/{code}:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Shortened code
+        in: path
+        name: code
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "302":
+          description: Found
+      tags:
+      - link
   /v1/links/shortern:
     post:
       consumes:
@@ -51,7 +72,7 @@ paths:
         schema:
           $ref: '#/definitions/handler.shortenLinkInput'
       produces:
-      - application/json
+      - application/jsons
       responses:
         "200":
           description: OK
