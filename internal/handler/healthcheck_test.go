@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -22,6 +23,7 @@ func TestHealthCheck(t *testing.T) {
 		setupMockService func(ctx context.Context) *svc_mocks.HealthCheck
 		expectedCode     int
 		expectedBody     service.HealthResponse
+		expectedError    string
 	}{
 		{
 			name: "Case 1: Handler successfully returns health check data from service",
@@ -41,7 +43,18 @@ func TestHealthCheck(t *testing.T) {
 				InstanceID:  "mock-uuid-123",
 			},
 		},
+		{
+			name: "Case 2: Handler returns internal server error",
+			setupMockService: func(ctx context.Context) *svc_mocks.HealthCheck {
+				mockSvc := &svc_mocks.HealthCheck{}
+				mockSvc.On("Check").Return(service.HealthResponse{}, errors.New("health check failed"))
+				return mockSvc
+			},
+			expectedCode:  http.StatusInternalServerError,
+			expectedError: "Internal Server Error",
+		},
 	}
+
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
@@ -53,12 +66,21 @@ func TestHealthCheck(t *testing.T) {
 
 			assert.Equal(t, tc.expectedCode, rec.Code)
 
+			if tc.expectedError != "" {
+				var actualBody map[string]string
+				err := json.Unmarshal(rec.Body.Bytes(), &actualBody)
+				if err != nil {
+					t.Fatalf("Failed to parse response body: %v", err)
+				}
+				assert.Equal(t, tc.expectedError, actualBody["error"])
+				return
+			}
+
 			var actualBody service.HealthResponse
 			err := json.Unmarshal(rec.Body.Bytes(), &actualBody)
 			if err != nil {
 				t.Fatalf("Failed to parse response body: %v", err)
 			}
-
 			assert.Equal(t, tc.expectedBody.Message, actualBody.Message)
 			assert.Equal(t, tc.expectedBody.ServiceName, actualBody.ServiceName)
 			assert.Equal(t, tc.expectedBody.InstanceID, actualBody.InstanceID)

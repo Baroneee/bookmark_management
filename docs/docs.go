@@ -42,6 +42,33 @@ const docTemplate = `{
                 }
             }
         },
+        "/v1/links/redirect/{code}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "link"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Shortened code",
+                        "name": "code",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "302": {
+                        "description": "Found"
+                    }
+                }
+            }
+        },
         "/v1/links/shortern": {
             "post": {
                 "description": "Generate shortern link",
@@ -49,7 +76,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "produces": [
-                    "application/json"
+                    "application/jsons"
                 ],
                 "tags": [
                     "link"
@@ -83,9 +110,14 @@ const docTemplate = `{
     "definitions": {
         "handler.shortenLinkInput": {
             "type": "object",
+            "required": [
+                "url"
+            ],
             "properties": {
-                "exp": {
-                    "type": "integer"
+                "expireTime": {
+                    "type": "integer",
+                    "maximum": 604800,
+                    "minimum": 0
                 },
                 "url": {
                     "type": "string"
